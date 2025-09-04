@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Web App Completo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+        }
+
+        body {
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .clock {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .main {
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .app-card h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        /* Contador */
+        .counter-display {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .count-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a6fd8; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+
+        /* Calculadora */
+        .calculator-display {
+            width: 100%;
+            padding: 1rem;
+            font-size: 2rem;
+            text-align: right;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calc-btn {
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .calc-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .calc-btn.number { background: #e9ecef; color: #333; }
+        .calc-btn.operator { background: #667eea; color: white; }
+        .calc-btn.equals { background: #28a745; color: white; }
+        .calc-btn.clear { background: #dc3545; color: white; }
+
+        /* Todo List */
+        .todo-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .todo-input {
+            flex: 1;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .todo-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 1rem;
+        }
+
+        .todo-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Gerador de Cores */
+        .color-display {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .color-info {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .color-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin: 0.25rem;
+            display: inline-block;
+        }
+
+        /* Jogo de Adivinhação */
+        .game-info {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .game-input {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1.2rem;
+            text-align: center;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .game-feedback {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .feedback-hot { background: #d4edda; color: #155724; }
+        .feedback-warm { background: #fff3cd; color: #856404; }
+        .feedback-cold { background: #f8d7da; color: #721c24; }
+        .feedback-win { background: #d1ecf1; color: #0c5460; }
+
+        /* Novas funcionalidades */
+        .notes-textarea {
+            width: 100%;
+            height: 200px;
+            padding: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .converter-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .converter-input, .converter-select {
+            padding: 0.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .converter-input {
+            width: 120px;
+        }
+
+        .converter-result {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #667eea;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .timer-input {
+            width: 60px;
+            padding: 0.5rem;
+            text-align: center;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+        }
+
+        .password-display {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin: 1rem 0;
+            word-break: break-all;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .password-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qr-display {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .qr-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .weather-display {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+
+        .weather-temp {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .weather-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .weather-item {
+            text-align: center;
+        }
+
+        .weather-item span {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .weather-item strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-top: 0.25rem;
+        }
+
+        .city-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        /* Novos estilos para APIs divertidas */
+        .meme-container {
+            position: relative;
+            display: inline-block;
+            margin: 1rem 0;
+        }
+
+        .meme-image {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .meme-text-inputs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meme-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .translator-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .translator-textarea {
+            flex: 1;
+            min-width: 250px;
+            height: 120px;
+            padding: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            resize: vertical;
+        }
+
+        .language-select {
+            padding: 0.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .fact-display, .joke-display {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin: 1rem 0;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .animal-image-container {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .animal-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .url-shortener-result {
+            padding: 1rem;
+            background: #e8f5e8;
+            border-radius: 8px;
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+
+        .cep-result {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .cep-item {
+            text-align: center;
+        }
+
+        .cep-item span {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .cep-item strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-top: 0.25rem;
+        }
+
+        .currency-converter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .currency-input {
+            width: 120px;
+            padding: 0.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+        }
+
+        .currency-select {
+            padding: 0.5rem;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+        }
+
+        .currency-result {
+            padding: 1rem;
+            background: #f0f8ff;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem;
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+            
+            .navbar h1 {
+                font-size: 1.2rem;
+            }
+            
+            .clock {
+                font-size: 1rem;
+            }
+            
+            .main {
+                padding: 1rem;
+            }
+            
+            .app-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .app-card {
+                padding: 1rem;
+                border-radius: 15px;
+            }
+            
+            .app-card h2 {
+                font-size: 1.4rem;
+                margin-bottom: 1rem;
+            }
+            
+            .count-number {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+                min-width: 70px;
+            }
+            
+            .calculator-display {
+                font-size: 1.5rem;
+                padding: 0.75rem;
+            }
+            
+            .calculator-grid {
+                gap: 0.25rem;
+            }
+            
+            .calc-btn {
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+            
+            .todo-input-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .todo-input {
+                padding: 0.5rem;
+            }
+            
+            .color-display {
+                height: 120px;
+                font-size: 1rem;
+            }
+            
+            .color-code {
+                font-size: 0.9rem;
+                padding: 0.25rem;
+            }
+            
+            .game-input {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+            
+            .game-feedback {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+            
+            .game-info {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0.5rem;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .navbar h1 {
+                font-size: 1rem;
+            }
+            
+            .main {
+                padding: 0.5rem;
+            }
+            
+            .app-card {
+                padding: 0.75rem;
+            }
+            
+            .count-number {
+                font-size: 1.5rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.25rem;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .calculator-grid {
+                gap: 0.125rem;
+            }
+            
+            .calc-btn {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .color-display {
+                height: 100px;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>🚀 Web App Completo</h1>
+        <div class="clock" id="clock"></div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <div class="app-grid">
+                <!-- Contador -->
+                <div class="app-card">
+                    <h2>📊 Contador</h2>
+                    <div class="counter-display">
+                        <div class="count-number" id="countDisplay">0</div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="increment()">+1</button>
+                        <button class="btn btn-danger" onclick="decrement()">-1</button>
+                        <button class="btn btn-secondary" onclick="resetCounter()">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Calculadora -->
+                <div class="app-card">
+                    <h2>🧮 Calculadora</h2>
+                    <input type="text" class="calculator-display" id="calcDisplay" readonly>
+                    <div class="calculator-grid">
+                        <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('/')">/</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('*')">*</button>
+                        <button class="calc-btn operator" onclick="deleteLast()">⌫</button>
+                        
+                        <button class="calc-btn number" onclick="appendToCalc('7')">7</button>
+                        <button class="calc-btn number" onclick="appendToCalc('8')">8</button>
+                        <button class="calc-btn number" onclick="appendToCalc('9')">9</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('-')">-</button>
+                        
+                        <button class="calc-btn number" onclick="appendToCalc('4')">4</button>
+                        <button class="calc-btn number" onclick="appendToCalc('5')">5</button>
+                        <button class="calc-btn number" onclick="appendToCalc('6')">6</button>
+                        <button class="calc-btn operator" onclick="appendToCalc('+')">+</button>
+                        
+                        <button class="calc-btn number" onclick="appendToCalc('1')">1</button>
+                        <button class="calc-btn number" onclick="appendToCalc('2')">2</button>
+                        <button class="calc-btn number" onclick="appendToCalc('3')">3</button>
+                        <button class="calc-btn equals" onclick="calculateResult()" rowspan="2">=</button>
+                        
+                        <button class="calc-btn number" onclick="appendToCalc('0')" style="grid-column: span 2;">0</button>
+                        <button class="calc-btn number" onclick="appendToCalc('.')">.</button>
+                    </div>
+                </div>
+
+                <!-- Lista de Tarefas -->
+                <div class="app-card">
+                    <h2>✅ Lista de Tarefas</h2>
+                    <div class="todo-input-group">
+                        <input type="text" class="todo-input" id="todoInput" placeholder="Digite uma nova tarefa...">
+                        <button class="btn btn-primary" onclick="addTodo()">Adicionar</button>
+                    </div>
+                    <div class="todo-list" id="todoList"></div>
+                </div>
+
+                <!-- Gerador de Cores -->
+                <div class="app-card">
+                    <h2>🎨 Gerador de Cores</h2>
+                    <div class="color-display" id="colorDisplay"></div>
+                    <div class="color-info">
+                        <div class="color-code" id="hexCode">#000000</div>
+                        <div class="color-code" id="rgbCode">rgb(0, 0, 0)</div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="generateRandomColor()">Nova Cor</button>
+                        <button class="btn btn-secondary" onclick="copyColorCode()">Copiar Hex</button>
+                    </div>
+                </div>
+
+                <!-- Jogo de Adivinhação -->
+                <div class="app-card">
+                    <h2>🎯 Jogo de Adivinhação</h2>
+                    <div class="game-info">
+                        <p>Adivinhe um número entre 1 e 100!</p>
+                        <p>Tentativas: <span id="attempts">0</span></p>
+                    </div>
+                    <input type="number" class="game-input" id="guessInput" placeholder="Digite seu palpite..." min="1" max="100">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="makeGuess()">Tentar</button>
+                        <button class="btn btn-secondary" onclick="restartGame()">Novo Jogo</button>
+                    </div>
+                    <div class="game-feedback" id="gameFeedback"></div>
+                </div>
+
+                <!-- Status da Aplicação -->
+                <div class="app-card">
+                    <h2>📈 Status</h2>
+                    <div class="game-info">
+                        <p>⏰ Tempo online: <span id="uptime">0s</span></p>
+                        <p>🖱️ Cliques realizados: <span id="clickCount">0</span></p>
+                        <p>✅ Tarefas criadas: <span id="todoCount">0</span></p>
+                        <p>🎨 Cores geradas: <span id="colorCount">0</span></p>
+                        <p>📝 Notas salvas: <span id="notesCount">0</span></p>
+                        <p>🔐 Senhas geradas: <span id="passwordsCount">0</span></p>
+                        <p>😂 Memes criados: <span id="memesCount">0</span></p>
+                        <p>🌍 Traduções feitas: <span id="translationsCount">0</span></p>
+                        <p>🤓 Fatos descobertos: <span id="factsCount">0</span></p>
+                        <p>😄 Piadas ouvidas: <span id="jokesCount">0</span></p>
+                    </div>
+                </div>
+
+                <!-- Sistema de Notas -->
+                <div class="app-card">
+                    <h2>📝 Bloco de Notas</h2>
+                    <textarea class="notes-textarea" id="notesText" placeholder="Digite suas anotações aqui..."></textarea>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="saveNotes()">💾 Salvar</button>
+                        <button class="btn btn-secondary" onclick="clearNotes()">🗑️ Limpar</button>
+                        <button class="btn btn-success" onclick="exportNotes()">📤 Exportar</button>
+                    </div>
+                </div>
+
+                <!-- Conversor de Unidades -->
+                <div class="app-card">
+                    <h2>🔄 Conversor de Unidades</h2>
+                    <div class="converter-group">
+                        <input type="number" class="converter-input" id="converterInput" placeholder="0" step="any">
+                        <select class="converter-select" id="converterType" onchange="updateConverter()">
+                            <option value="temperature">Temperatura</option>
+                            <option value="weight">Peso</option>
+                            <option value="distance">Distância</option>
+                            <option value="speed">Velocidade</option>
+                        </select>
+                        <select class="converter-select" id="fromUnit" onchange="convert()"></select>
+                        <span>➡️</span>
+                        <select class="converter-select" id="toUnit" onchange="convert()"></select>
+                    </div>
+                    <div class="converter-result" id="converterResult">Selecione as unidades para converter</div>
+                </div>
+
+                <!-- Cronômetro e Timer -->
+                <div class="app-card">
+                    <h2>⏱️ Cronômetro & Timer</h2>
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    <div class="timer-controls">
+                        <input type="number" class="timer-input" id="timerHours" placeholder="H" max="23" min="0">
+                        <span>:</span>
+                        <input type="number" class="timer-input" id="timerMinutes" placeholder="M" max="59" min="0">
+                        <span>:</span>
+                        <input type="number" class="timer-input" id="timerSeconds" placeholder="S" max="59" min="0">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="startStopwatch()">▶️ Iniciar</button>
+                        <button class="btn btn-danger" onclick="stopStopwatch()">⏹️ Parar</button>
+                        <button class="btn btn-secondary" onclick="resetStopwatch()">🔄 Reset</button>
+                        <button class="btn btn-primary" onclick="startTimer()">⏰ Timer</button>
+                    </div>
+                </div>
+
+                <!-- Gerador de Senhas -->
+                <div class="app-card">
+                    <h2>🔐 Gerador de Senhas</h2>
+                    <div class="password-options">
+                        <div class="password-option">
+                            <input type="checkbox" id="includeUppercase" checked>
+                            <label>Maiúsculas (A-Z)</label>
+                        </div>
+                        <div class="password-option">
+                            <input type="checkbox" id="includeLowercase" checked>
+                            <label>Minúsculas (a-z)</label>
+                        </div>
+                        <div class="password-option">
+                            <input type="checkbox" id="includeNumbers" checked>
+                            <label>Números (0-9)</label>
+                        </div>
+                        <div class="password-option">
+                            <input type="checkbox" id="includeSymbols">
+                            <label>Símbolos (!@#$)</label>
+                        </div>
+                    </div>
+                    <div class="converter-group">
+                        <label>Comprimento:</label>
+                        <input type="range" id="passwordLength" min="4" max="50" value="12" oninput="updatePasswordLength()">
+                        <span id="passwordLengthValue">12</span>
+                    </div>
+                    <div class="password-display" id="passwordDisplay">Clique em "Gerar" para criar uma senha</div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="generatePassword()">🔄 Gerar</button>
+                        <button class="btn btn-secondary" onclick="copyPassword()">📋 Copiar</button>
+                    </div>
+                </div>
+
+                <!-- QR Code Generator -->
+                <div class="app-card">
+                    <h2>📱 Gerador de QR Code</h2>
+                    <input type="text" class="qr-input" id="qrText" placeholder="Digite o texto ou URL para gerar o QR Code...">
+                    <div class="qr-display" id="qrDisplay">
+                        <p>Digite algo acima para gerar o QR Code</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="generateQR()">📱 Gerar QR</button>
+                        <button class="btn btn-secondary" onclick="downloadQR()">💾 Download</button>
+                    </div>
+                </div>
+
+                <!-- Clima/Tempo -->
+                <div class="app-card">
+                    <h2>🌤️ Previsão do Tempo</h2>
+                    <input type="text" class="city-input" id="cityInput" placeholder="Digite o nome da cidade...">
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="getWeather()">🔍 Buscar</button>
+                        <button class="btn btn-secondary" onclick="getCurrentLocation()">📍 Minha Localização</button>
+                    </div>
+                    <div class="weather-display" id="weatherDisplay">
+                        <p>Digite uma cidade para ver a previsão do tempo</p>
+                    </div>
+                </div>
+
+                <!-- Gerador de Memes -->
+                <div class="app-card">
+                    <h2>😂 Gerador de Memes</h2>
+                    <select class="language-select" id="memeTemplate" onchange="loadMemeTemplate()">
+                        <option value="">Selecione um template...</option>
+                        <option value="61579">Drake Pointing</option>
+                        <option value="87743020">Two Buttons</option>
+                        <option value="129242436">Change My Mind</option>
+                        <option value="247375501">Buff Doge vs. Cheems</option>
+                        <option value="181913649">Drake Reaction</option>
+                        <option value="102156234">Mocking SpongeBob</option>
+                        <option value="112126428">Distracted Boyfriend</option>
+                        <option value="131087935">Running Away Balloon</option>
+                        <option value="4087833">Waiting Skeleton</option>
+                        <option value="222403160">Bernie Sanders Once Again Asking</option>
+                        <option value="178591752">Tuxedo Winnie The Pooh</option>
+                        <option value="97984">Disaster Girl</option>
+                        <option value="124055727">Y'all Got Any More Of That</option>
+                        <option value="91998305">Drake Blank</option>
+                        <option value="135256802">Epic Handshake</option>
+                    </select>
+                    <div class="meme-container" id="memeContainer">
+                        <p>Selecione um template para começar</p>
+                    </div>
+                    <div class="meme-text-inputs" id="memeInputs" style="display: none;">
+                        <input type="text" class="meme-input" id="topText" placeholder="Texto superior">
+                        <input type="text" class="meme-input" id="bottomText" placeholder="Texto inferior">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="generateMeme()">🎨 Gerar Meme</button>
+                        <button class="btn btn-secondary" onclick="downloadMeme()">💾 Download</button>
+                    </div>
+                </div>
+
+                <!-- Tradutor -->
+                <div class="app-card">
+                    <h2>🌍 Tradutor</h2>
+                    <div class="translator-container">
+                        <div style="flex: 1;">
+                            <select class="language-select" id="fromLanguage">
+                                <option value="auto">🔍 Detectar idioma</option>
+                                <option value="pt">🇧🇷 Português</option>
+                                <option value="en">🇺🇸 Inglês</option>
+                                <option value="es">🇪🇸 Espanhol</option>
+                                <option value="fr">🇫🇷 Francês</option>
+                                <option value="de">🇩🇪 Alemão</option>
+                                <option value="it">🇮🇹 Italiano</option>
+                                <option value="ja">🇯🇵 Japonês</option>
+                                <option value="ko">🇰🇷 Coreano</option>
+                                <option value="zh">🇨🇳 Chinês</option>
+                                <option value="ru">🇷🇺 Russo</option>
+                                <option value="ar">🇸🇦 Árabe</option>
+                                <option value="hi">🇮🇳 Hindi</option>
+                                <option value="nl">🇳🇱 Holandês</option>
+                            </select>
+                            <textarea class="translator-textarea" id="sourceText" placeholder="Digite o texto para traduzir..."></textarea>
+                        </div>
+                        <div style="flex: 1;">
+                            <select class="language-select" id="toLanguage">
+                                <option value="en">🇺🇸 Inglês</option>
+                                <option value="pt">🇧🇷 Português</option>
+                                <option value="es">🇪🇸 Espanhol</option>
+                                <option value="fr">🇫🇷 Francês</option>
+                                <option value="de">🇩🇪 Alemão</option>
+                                <option value="it">🇮🇹 Italiano</option>
+                                <option value="ja">🇯🇵 Japonês</option>
+                                <option value="ko">🇰🇷 Coreano</option>
+                                <option value="zh">🇨🇳 Chinês</option>
+                                <option value="ru">🇷🇺 Russo</option>
+                                <option value="ar">🇸🇦 Árabe</option>
+                                <option value="hi">🇮🇳 Hindi</option>
+                                <option value="nl">🇳🇱 Holandês</option>
+                            </select>
+                            <textarea class="translator-textarea" id="translatedText" placeholder="Tradução aparecerá aqui..." readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="translateText()">🔄 Traduzir</button>
+                        <button class="btn btn-secondary" onclick="swapLanguages()">🔄 Inverter</button>
+                        <button class="btn btn-secondary" onclick="copyTranslation()">📋 Copiar</button>
+                    </div>
+                </div>
+
+                <!-- Fatos Curiosos -->
+                <div class="app-card">
+                    <h2>🤓 Fatos Curiosos</h2>
+                    <div class="fact-display" id="factDisplay">
+                        Clique no botão para descobrir um fato interessante!
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="getRandomFact()">🎲 Novo Fato</button>
+                        <button class="btn btn-secondary" onclick="copyFact()">📋 Copiar</button>
+                    </div>
+                </div>
+
+                <!-- Imagens Fofas -->
+                <div class="app-card">
+                    <h2>🐱 Imagens Fofas</h2>
+                    <div class="animal-image-container" id="animalContainer">
+                        <p>Clique nos botões para ver imagens fofas!</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="getCatImage()">🐱 Gato</button>
+                        <button class="btn btn-success" onclick="getDogImage()">🐶 Cachorro</button>
+                        <button class="btn btn-secondary" onclick="getFoxImage()">🦊 Raposa</button>
+                    </div>
+                </div>
+
+                <!-- Gerador de Piadas -->
+                <div class="app-card">
+                    <h2>😄 Gerador de Piadas</h2>
+                    <div class="joke-display" id="jokeDisplay">
+                        Clique no botão para ouvir uma piada!
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="getRandomJoke()">😂 Nova Piada</button>
+                        <button class="btn btn-secondary" onclick="copyJoke()">📋 Copiar</button>
+                    </div>
+                </div>
+
+                <!-- Encurtador de URLs -->
+                <div class="app-card">
+                    <h2>🔗 Encurtador de URLs</h2>
+                    <input type="url" class="qr-input" id="longUrl" placeholder="Cole aqui a URL que deseja encurtar...">
+                    <div class="url-shortener-result" id="shortUrlResult" style="display: none;">
+                        <p><strong>URL Encurtada:</strong></p>
+                        <p id="shortUrlDisplay"></p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="shortenUrl()">✂️ Encurtar</button>
+                        <button class="btn btn-secondary" onclick="copyShortUrl()">📋 Copiar</button>
+                    </div>
+                </div>
+
+                <!-- Consulta CEP -->
+                <div class="app-card">
+                    <h2>📮 Consulta CEP</h2>
+                    <input type="text" class="qr-input" id="cepInput" placeholder="Digite o CEP (ex: 01234-567)" maxlength="9">
+                    <div class="cep-result" id="cepResult" style="display: none;"></div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="consultarCep()">🔍 Consultar</button>
+                        <button class="btn btn-secondary" onclick="copyCepInfo()">📋 Copiar</button>
+                    </div>
+                </div>
+
+                <!-- Conversor de Moedas -->
+                <div class="app-card">
+                    <h2>💰 Conversor de Moedas</h2>
+                    <div class="currency-converter">
+                        <input type="number" class="currency-input" id="currencyAmount" placeholder="100" step="0.01">
+                        <select class="currency-select" id="fromCurrency">
+                            <option value="USD">USD - Dólar</option>
+                            <option value="BRL" selected>BRL - Real</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - Libra</option>
+                            <option value="JPY">JPY - Iene</option>
+                            <option value="CAD">CAD - Dólar Canadense</option>
+                            <option value="AUD">AUD - Dólar Australiano</option>
+                        </select>
+                        <span>➡️</span>
+                        <select class="currency-select" id="toCurrency">
+                            <option value="USD" selected>USD - Dólar</option>
+                            <option value="BRL">BRL - Real</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - Libra</option>
+                            <option value="JPY">JPY - Iene</option>
+                            <option value="CAD">CAD - Dólar Canadense</option>
+                            <option value="AUD">AUD - Dólar Australiano</option>
+                        </select>
+                    </div>
+                    <div class="currency-result" id="currencyResult">
+                        Digite um valor e clique em converter
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="convertCurrency()">💱 Converter</button>
+                        <button class="btn btn-secondary" onclick="swapCurrencies()">🔄 Inverter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Estados globais
+        let count = 0;
+        let todos = [];
+        let currentColor = '#000000';
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let gameAttempts = 0;
+        let startTime = Date.now();
+        let clickCount = 0;
+        let todoCount = 0;
+        let colorCount = 0;
+        
+        // Novos estados
+        let notesCount = 0;
+        let passwordsCount = 0;
+        let stopwatchTime = 0;
+        let stopwatchInterval;
+        let timerInterval;
+        let isStopwatchRunning = false;
+        let currentQR = null;
+        let currentMeme = null;
+        let currentGeneratedMeme = null;
+        let factsCount = 0;
+        let jokesCount = 0;
+        let memesCount = 0;
+        let translationsCount = 0;
+
+        // Dados de conversão
+        const conversionData = {
+            temperature: {
+                celsius: { name: 'Celsius (°C)', factor: 1, offset: 0 },
+                fahrenheit: { name: 'Fahrenheit (°F)', factor: 9/5, offset: 32 },
+                kelvin: { name: 'Kelvin (K)', factor: 1, offset: 273.15 }
+            },
+            weight: {
+                kg: { name: 'Quilograma (kg)', factor: 1 },
+                g: { name: 'Grama (g)', factor: 0.001 },
+                lb: { name: 'Libra (lb)', factor: 0.453592 },
+                oz: { name: 'Onça (oz)', factor: 0.0283495 }
+            },
+            distance: {
+                m: { name: 'Metro (m)', factor: 1 },
+                km: { name: 'Quilômetro (km)', factor: 1000 },
+                cm: { name: 'Centímetro (cm)', factor: 0.01 },
+                mm: { name: 'Milímetro (mm)', factor: 0.001 },
+                ft: { name: 'Pé (ft)', factor: 0.3048 },
+                in: { name: 'Polegada (in)', factor: 0.0254 },
+                mi: { name: 'Milha (mi)', factor: 1609.34 }
+            },
+            speed: {
+                mps: { name: 'm/s', factor: 1 },
+                kph: { name: 'km/h', factor: 0.277778 },
+                mph: { name: 'mph', factor: 0.44704 },
+                knot: { name: 'Nó', factor: 0.514444 }
+            }
+        };
+
+        // Relógio
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR');
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        // Contador
+        function increment() {
+            count++;
+            updateCounterDisplay();
+            incrementClickCount();
+        }
+
+        function decrement() {
+            count--;
+            updateCounterDisplay();
+            incrementClickCount();
+        }
+
+        function resetCounter() {
+            count = 0;
+            updateCounterDisplay();
+            incrementClickCount();
+        }
+
+        function updateCounterDisplay() {
+            document.getElementById('countDisplay').textContent = count;
+        }
+
+        // Calculadora
+        let calcExpression = '';
+
+        function appendToCalc(value) {
+            calcExpression += value;
+            document.getElementById('calcDisplay').value = calcExpression;
+            incrementClickCount();
+        }
+
+        function clearCalc() {
+            calcExpression = '';
+            document.getElementById('calcDisplay').value = '';
+            incrementClickCount();
+        }
+
+        function deleteLast() {
+            calcExpression = calcExpression.slice(0, -1);
+            document.getElementById('calcDisplay').value = calcExpression;
+            incrementClickCount();
+        }
+
+        function calculateResult() {
+            try {
+                const result = eval(calcExpression);
+                calcExpression = result.toString();
+                document.getElementById('calcDisplay').value = calcExpression;
+            } catch (error) {
+                document.getElementById('calcDisplay').value = 'Erro';
+                calcExpression = '';
+            }
+            incrementClickCount();
+        }
+
+        // Todo List
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                const todo = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                };
+                
+                todos.push(todo);
+                todoCount++;
+                input.value = '';
+                renderTodos();
+                updateStats();
+                incrementClickCount();
+            }
+        }
+
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                renderTodos();
+            }
+            incrementClickCount();
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            renderTodos();
+            incrementClickCount();
+        }
+
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            
+            todos.forEach(todo => {
+                const todoItem = document.createElement('div');
+                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                
+                todoItem.innerHTML = `
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleTodo(${todo.id})">
+                    <span class="todo-text">${todo.text}</span>
+                    <button class="todo-delete" onclick="deleteTodo(${todo.id})">×</button>
+                `;
+                
+                todoList.appendChild(todoItem);
+            });
+        }
+
+        // Gerador de Cores
+        function generateRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            
+            const hex = '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+            
+            const rgb = `rgb(${r}, ${g}, ${b})`;
+            
+            currentColor = hex;
+            colorCount++;
+            
+            const display = document.getElementById('colorDisplay');
+            display.style.backgroundColor = hex;
+            display.textContent = hex;
+            
+            document.getElementById('hexCode').textContent = hex;
+            document.getElementById('rgbCode').textContent = rgb;
+            
+            updateStats();
+            incrementClickCount();
+        }
+
+        function copyColorCode() {
+            navigator.clipboard.writeText(currentColor).then(() => {
+                alert('Código da cor copiado!');
+            });
+            incrementClickCount();
+        }
+
+        // Jogo de Adivinhação
+        function makeGuess() {
+            const input = document.getElementById('guessInput');
+            const guess = parseInt(input.value);
+            const feedback = document.getElementById('gameFeedback');
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                feedback.textContent = 'Por favor, digite um número entre 1 e 100!';
+                feedback.className = 'game-feedback feedback-cold';
+                return;
+            }
+            
+            gameAttempts++;
+            document.getElementById('attempts').textContent = gameAttempts;
+            
+            if (guess === secretNumber) {
+                feedback.textContent = `🎉 Parabéns! Você acertou em ${gameAttempts} tentativas!`;
+                feedback.className = 'game-feedback feedback-win';
+            } else {
+                const diff = Math.abs(guess - secretNumber);
+                if (diff <= 5) {
+                    feedback.textContent = '🔥 Muito quente! Você está muito perto!';
+                    feedback.className = 'game-feedback feedback-hot';
+                } else if (diff <= 15) {
+                    feedback.textContent = '🌡️ Quente! Você está próximo!';
+                    feedback.className = 'game-feedback feedback-warm';
+                } else {
+                    feedback.textContent = guess > secretNumber ? 
+                        '❄️ Muito alto! Tente um número menor.' : 
+                        '❄️ Muito baixo! Tente um número maior.';
+                    feedback.className = 'game-feedback feedback-cold';
+                }
+            }
+            
+            input.value = '';
+            incrementClickCount();
+        }
+
+        function restartGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            gameAttempts = 0;
+            document.getElementById('attempts').textContent = gameAttempts;
+            document.getElementById('guessInput').value = '';
+            document.getElementById('gameFeedback').textContent = '';
+            incrementClickCount();
+        }
+
+        // Sistema de Notas
+        function saveNotes() {
+            const notes = document.getElementById('notesText').value;
+            localStorage.setItem('webAppNotes', notes);
+            notesCount++;
+            incrementClickCount();
+            alert('📝 Notas salvas com sucesso!');
+        }
+
+        function clearNotes() {
+            document.getElementById('notesText').value = '';
+            incrementClickCount();
+        }
+
+        function exportNotes() {
+            const notes = document.getElementById('notesText').value;
+            const blob = new Blob([notes], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'minhas-notas.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            incrementClickCount();
+        }
+
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('webAppNotes');
+            if (savedNotes) {
+                document.getElementById('notesText').value = savedNotes;
+            }
+        }
+
+        // Conversor de Unidades
+        function updateConverter() {
+            const type = document.getElementById('converterType').value;
+            const fromUnit = document.getElementById('fromUnit');
+            const toUnit = document.getElementById('toUnit');
+            
+            fromUnit.innerHTML = '';
+            toUnit.innerHTML = '';
+            
+            for (const [key, value] of Object.entries(conversionData[type])) {
+                fromUnit.innerHTML += `<option value="${key}">${value.name}</option>`;
+                toUnit.innerHTML += `<option value="${key}">${value.name}</option>`;
+            }
+            
+            toUnit.selectedIndex = 1;
+            convert();
+        }
+
+        function convert() {
+            const input = parseFloat(document.getElementById('converterInput').value) || 0;
+            const type = document.getElementById('converterType').value;
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            
+            const fromData = conversionData[type][fromUnit];
+            const toData = conversionData[type][toUnit];
+            
+            let result;
+            
+            if (type === 'temperature') {
+                let celsius = input;
+                if (fromUnit === 'fahrenheit') celsius = (input - 32) * 5/9;
+                if (fromUnit === 'kelvin') celsius = input - 273.15;
+                
+                if (toUnit === 'celsius') result = celsius;
+                else if (toUnit === 'fahrenheit') result = celsius * 9/5 + 32;
+                else if (toUnit === 'kelvin') result = celsius + 273.15;
+            } else {
+                const baseValue = input * fromData.factor;
+                result = baseValue / toData.factor;
+            }
+            
+            document.getElementById('converterResult').textContent = 
+                `${input} ${fromData.name} = ${result.toFixed(4)} ${toData.name}`;
+        }
+
+        // Cronômetro e Timer
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startStopwatch() {
+            if (!isStopwatchRunning) {
+                isStopwatchRunning = true;
+                stopwatchInterval = setInterval(() => {
+                    stopwatchTime++;
+                    document.getElementById('timerDisplay').textContent = formatTime(stopwatchTime);
+                }, 1000);
+            }
+            incrementClickCount();
+        }
+
+        function stopStopwatch() {
+            isStopwatchRunning = false;
+            clearInterval(stopwatchInterval);
+            incrementClickCount();
+        }
+
+        function resetStopwatch() {
+            stopStopwatch();
+            stopwatchTime = 0;
+            document.getElementById('timerDisplay').textContent = formatTime(0);
+            incrementClickCount();
+        }
+
+        function startTimer() {
+            const hours = parseInt(document.getElementById('timerHours').value) || 0;
+            const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
+            const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
+            
+            let totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            
+            if (totalSeconds <= 0) {
+                alert('⏰ Digite um tempo válido para o timer!');
+                return;
+            }
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                document.getElementById('timerDisplay').textContent = formatTime(totalSeconds);
+                
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alert('⏰ Tempo esgotado!');
+                    document.getElementById('timerDisplay').textContent = '🔔 TEMPO!';
+                    setTimeout(() => {
+                        document.getElementById('timerDisplay').textContent = formatTime(0);
+                    }, 3000);
+                    return;
+                }
+                
+                totalSeconds--;
+            }, 1000);
+            
+            incrementClickCount();
+        }
+
+        // Gerador de Senhas
+        function updatePasswordLength() {
+            const length = document.getElementById('passwordLength').value;
+            document.getElementById('passwordLengthValue').textContent = length;
+        }
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById('passwordLength').value);
+            const includeUppercase = document.getElementById('includeUppercase').checked;
+            const includeLowercase = document.getElementById('includeLowercase').checked;
+            const includeNumbers = document.getElementById('includeNumbers').checked;
+            const includeSymbols = document.getElementById('includeSymbols').checked;
+            
+            let charset = '';
+            if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+            if (includeNumbers) charset += '0123456789';
+            if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            if (charset === '') {
+                alert('🔐 Selecione pelo menos uma opção de caracteres!');
+                return;
+            }
+            
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            
+            document.getElementById('passwordDisplay').textContent = password;
+            passwordsCount++;
+            incrementClickCount();
+        }
+
+        function copyPassword() {
+            const password = document.getElementById('passwordDisplay').textContent;
+            if (password && password !== 'Clique em "Gerar" para criar uma senha') {
+                navigator.clipboard.writeText(password).then(() => {
+                    alert('🔐 Senha copiada para a área de transferência!');
+                });
+            }
+            incrementClickCount();
+        }
+
+        // QR Code Generator
+        function generateQR() {
+            const text = document.getElementById('qrText').value.trim();
+            if (!text) {
+                alert('📱 Digite algo para gerar o QR Code!');
+                return;
+            }
+            
+            const qrDisplay = document.getElementById('qrDisplay');
+            const size = 200;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
+            
+            qrDisplay.innerHTML = `<img src="${qrUrl}" alt="QR Code" style="max-width: 100%; border: 1px solid #ddd; border-radius: 8px;">`;
+            currentQR = qrUrl;
+            incrementClickCount();
+        }
+
+        function downloadQR() {
+            if (!currentQR) {
+                alert('📱 Gere um QR Code primeiro!');
+                return;
+            }
+            
+            const a = document.createElement('a');
+            a.href = currentQR;
+            a.download = 'qr-code.png';
+            a.click();
+            incrementClickCount();
+        }
+
+        // Gerador de Memes - CORRIGIDO e MELHORADO
+        function loadMemeTemplate() {
+            const templateId = document.getElementById('memeTemplate').value;
+            const memeContainer = document.getElementById('memeContainer');
+            const memeInputs = document.getElementById('memeInputs');
+            
+            if (!templateId) {
+                memeContainer.innerHTML = '<p>Selecione um template para começar</p>';
+                memeInputs.style.display = 'none';
+                return;
+            }
+            
+            // URLs dos templates populares - CORRIGIDAS e EXPANDIDAS
+            const templates = {
+                '61579': 'https://i.imgflip.com/1bij.jpg', // Drake Pointing
+                '87743020': 'https://i.imgflip.com/1g8my4.jpg', // Two Buttons
+                '129242436': 'https://i.imgflip.com/24y43o.jpg', // Change My Mind
+                '247375501': 'https://i.imgflip.com/43a45p.jpg', // Buff Doge vs. Cheems
+                '181913649': 'https://i.imgflip.com/30b1gx.jpg', // Drake Reaction
+                '102156234': 'https://i.imgflip.com/1otk96.jpg', // Mocking SpongeBob
+                '112126428': 'https://i.imgflip.com/1ur9b0.jpg', // Distracted Boyfriend
+                '131087935': 'https://i.imgflip.com/26am.jpg', // Running Away Balloon
+                '4087833': 'https://i.imgflip.com/2fm6x.jpg', // Waiting Skeleton
+                '222403160': 'https://i.imgflip.com/3oevdk.jpg', // Bernie Sanders
+                '178591752': 'https://i.imgflip.com/2ybua0.jpg', // Tuxedo Winnie
+                '97984': 'https://i.imgflip.com/23ls.jpg', // Disaster Girl
+                '124055727': 'https://i.imgflip.com/21uy0f.jpg', // Y'all Got Any More
+                '91998305': 'https://i.imgflip.com/1g7jz4.jpg', // Drake Blank
+                '135256802': 'https://i.imgflip.com/28j0te.jpg' // Epic Handshake
+            };
+            
+            memeContainer.innerHTML = `<img src="${templates[templateId]}" alt="Meme Template" class="meme-image" style="max-width: 100%; height: auto;">`;
+            memeInputs.style.display = 'flex';
+            currentMeme = templateId;
+            incrementClickCount();
+        }
+
+        async function generateMeme() {
+            if (!currentMeme) {
+                alert('😂 Selecione um template primeiro!');
+                return;
+            }
+            
+            const topText = document.getElementById('topText').value.trim();
+            const bottomText = document.getElementById('bottomText').value.trim();
+            
+            if (!topText && !bottomText) {
+                alert('😂 Digite pelo menos um texto!');
+                return;
+            }
+            
+            const memeContainer = document.getElementById('memeContainer');
+            memeContainer.innerHTML = '<p>🎨 Gerando seu meme...</p>';
+            
+            try {
+                // Primeira tentativa com ImgFlip API
+                const imgFlipResponse = await fetch('https://api.imgflip.com/caption_image', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        template_id: currentMeme,
+                        username: 'imgflip_hubot',
+                        password: 'imgflip_hubot',
+                        text0: topText || '',
+                        text1: bottomText || ''
+                    })
+                });
+                
+                const imgFlipData = await imgFlipResponse.json();
+                
+                if (imgFlipData.success) {
+                    memeContainer.innerHTML = `<img src="${imgFlipData.data.url}" alt="Generated Meme" class="meme-image" style="max-width: 100%; height: auto; border-radius: 8px;">`;
+                    currentGeneratedMeme = imgFlipData.data.url;
+                    memesCount++;
+                    updateStats();
+                } else {
+                    throw new Error('ImgFlip API failed');
+                }
+                
+            } catch (error) {
+                // Fallback 1: Memegen.link API
+                try {
+                    const memeUrl = `https://api.memegen.link/images/${getMemeKey(currentMeme)}/${encodeText(topText || 'TOP TEXT')}/${encodeText(bottomText || 'BOTTOM TEXT')}.jpg`;
+                    
+                    const img = new Image();
+                    img.onload = function() {
+                        memeContainer.innerHTML = `<img src="${memeUrl}" alt="Generated Meme" class="meme-image" style="max-width: 100%; height: auto; border-radius: 8px;">`;
+                        currentGeneratedMeme = memeUrl;
+                        memesCount++;
+                        updateStats();
+                    };
+                    
+                    img.onerror = function() {
+                        // Fallback 2: Canvas personalizado
+                        createCanvasMeme(topText, bottomText);
+                    };
+                    
+                    img.src = memeUrl;
+                    
+                } catch (error2) {
+                    // Fallback final: Canvas personalizado
+                    createCanvasMeme(topText, bottomText);
+                }
+            }
+            
+            incrementClickCount();
+        }
+
+        // Função auxiliar para mapear IDs para chaves do memegen
+        function getMemeKey(templateId) {
+            const memeKeys = {
+                '61579': 'drake',
+                '87743020': 'buttons', 
+                '129242436': 'cmm',
+                '247375501': 'buff-doge-vs-cheems',
+                '181913649': 'drake',
+                '102156234': 'sb',
+                '112126428': 'bf',
+                '131087935': 'balloon',
+                '4087833': 'skeleton',
+                '222403160': 'bernie',
+                '178591752': 'tuxedo-winnie',
+                '97984': 'disaster',
+                '124055727': 'yall-got-any-more',
+                '91998305': 'drake',
+                '135256802': 'handshake'
+            };
+            return memeKeys[templateId] || 'drake';
+        }
+
+        // Função para codificar texto para URLs
+        function encodeText(text) {
+            return text.replace(/\?/g, '~q').replace(/%/g, '~p').replace(/#/g, '~h')
+                      .replace(/\//g, '~s').replace(/ /g, '_').replace(/'/g, "''");
+        }
+
+        // Fallback melhorado para canvas
+        function createCanvasMeme(topText, bottomText) {
+            const memeContainer = document.getElementById('memeContainer');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = 600;
+            canvas.height = 600;
+            
+            // Fundo gradiente
+            const gradient = ctx.createLinearGradient(0, 0, 0, 600);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 600, 600);
+            
+            // Configurar texto
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.font = 'bold 36px Impact, Arial';
+            ctx.textAlign = 'center';
+            
+            // Texto superior
+            if (topText) {
+                const lines = wrapText(ctx, topText.toUpperCase(), 550);
+                let y = 60;
+                lines.forEach(line => {
+                    ctx.strokeText(line, 300, y);
+                    ctx.fillText(line, 300, y);
+                    y += 45;
+                });
+            }
+            
+            // Texto inferior
+            if (bottomText) {
+                const lines = wrapText(ctx, bottomText.toUpperCase(), 550);
+                let y = 540;
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    ctx.strokeText(lines[i], 300, y);
+                    ctx.fillText(lines[i], 300, y);
+                    y -= 45;
+                }
+            }
+            
+            const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+            memeContainer.innerHTML = `<img src="${dataURL}" alt="Generated Meme" class="meme-image" style="max-width: 100%; height: auto; border-radius: 8px;">`;
+            currentGeneratedMeme = dataURL;
+            memesCount++;
+            updateStats();
+        }
+
+        // Função para quebrar texto em linhas
+        function wrapText(ctx, text, maxWidth) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+            
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + ' ' + word).width;
+                if (width < maxWidth) {
+                    currentLine += ' ' + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        function downloadMeme() {
+            if (!currentGeneratedMeme) {
+                alert('😂 Gere um meme primeiro!');
+                return;
+            }
+            
+            const a = document.createElement('a');
+            a.href = currentGeneratedMeme;
+            a.download = 'meme.jpg';
+            a.click();
+            incrementClickCount();
+        }
+
+        // Tradutor - API REAL MyMemory com Fallback
+        async function translateText() {
+            const sourceText = document.getElementById('sourceText').value.trim();
+            const fromLang = document.getElementById('fromLanguage').value;
+            const toLang = document.getElementById('toLanguage').value;
+            
+            if (!sourceText) {
+                alert('🌍 Digite um texto para traduzir!');
+                return;
+            }
+            
+            if (fromLang === toLang) {
+                document.getElementById('translatedText').value = sourceText;
+                return;
+            }
+            
+            const translatedTextarea = document.getElementById('translatedText');
+            translatedTextarea.value = 'Traduzindo...';
+            
+            try {
+                // API Primary: MyMemory
+                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(sourceText)}&langpair=${fromLang}|${toLang}`);
+                const data = await response.json();
+                
+                if (data.responseData && data.responseData.translatedText && 
+                    !data.responseData.translatedText.includes('PLEASE SELECT TWO DIFFERENT LANGUAGES')) {
+                    translatedTextarea.value = data.responseData.translatedText;
+                    translationsCount++;
+                } else {
+                    throw new Error('MyMemory API failed');
+                }
+            } catch (error) {
+                try {
+                    // Fallback API: LibreTranslate (demo instance)
+                    const fallbackResponse = await fetch('https://libretranslate.de/translate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            q: sourceText,
+                            source: fromLang,
+                            target: toLang,
+                            format: 'text'
+                        })
+                    });
+                    
+                    const fallbackData = await fallbackResponse.json();
+                    
+                    if (fallbackData.translatedText) {
+                        translatedTextarea.value = fallbackData.translatedText;
+                        translationsCount++;
+                    } else {
+                        throw new Error('Fallback API also failed');
+                    }
+                } catch (fallbackError) {
+                    translatedTextarea.value = 'Erro na tradução. Verifique sua conexão e tente novamente.';
+                }
+            }
+            
+            incrementClickCount();
+        }
+        
+        function copyTranslation() {
+            const translatedText = document.getElementById('translatedText').value;
+            if (translatedText && translatedText !== 'Tradução aparecerá aqui...' && translatedText !== 'Traduzindo...') {
+                navigator.clipboard.writeText(translatedText).then(() => {
+                    alert('🌍 Tradução copiada para a área de transferência!');
+                });
+            } else {
+                alert('🌍 Nenhuma tradução para copiar!');
+            }
+            incrementClickCount();
+        }
+
+        function swapLanguages() {
+            const fromLanguage = document.getElementById('fromLanguage');
+            const toLanguage = document.getElementById('toLanguage');
+            const sourceText = document.getElementById('sourceText');
+            const translatedText = document.getElementById('translatedText');
+            
+            const tempLang = fromLanguage.value;
+            const tempText = sourceText.value;
+            
+            fromLanguage.value = toLanguage.value;
+            toLanguage.value = tempLang;
+            sourceText.value = translatedText.value;
+            translatedText.value = tempText;
+            
+            incrementClickCount();
+        }
+
+        // Fatos Curiosos - API REAL uselessfacts.jsph.pl
+        async function getRandomFact() {
+            const factDisplay = document.getElementById('factDisplay');
+            factDisplay.textContent = '🔍 Buscando um fato interessante...';
+            
+            try {
+                const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+                const data = await response.json();
+                
+                // Tentar traduzir automaticamente
+                try {
+                    const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(data.text)}&langpair=en|pt`);
+                    const translateData = await translateResponse.json();
+                    
+                    if (translateData.responseData && translateData.responseData.translatedText) {
+                        factDisplay.textContent = translateData.responseData.translatedText;
+                    } else {
+                        factDisplay.textContent = data.text + ' (em inglês)';
+                    }
+                } catch (translateError) {
+                    factDisplay.textContent = data.text + ' (em inglês)';
+                }
+                
+                factsCount++;
+            } catch (error) {
+                // Fatos em português como fallback
+                const factsPortugues = [
+                    "Os golfinhos têm nomes para si mesmos e se chamam pelo nome!",
+                    "Uma nuvem pode pesar mais de um milhão de toneladas.",
+                    "O coração de uma baleia azul é tão grande que um humano pode nadar através de suas artérias.",
+                    "As abelhas comunicam a localização das flores através de uma dança especial.",
+                    "Um polvo tem três corações e sangue azul.",
+                    "Os pinguins podem saltar até 2 metros de altura fora da água.",
+                    "Uma formiga pode levantar 50 vezes seu próprio peso.",
+                    "Os elefantes são um dos poucos animais que podem se reconhecer no espelho.",
+                    "As girafas dormem apenas 30 minutos a 2 horas por dia.",
+                    "Um grupo de flamingos é chamado de 'flamboyance'."
+                ];
+                
+                const randomFact = factsPortugues[Math.floor(Math.random() * factsPortugues.length)];
+                factDisplay.textContent = randomFact;
+                factsCount++;
+            }
+            
+            incrementClickCount();
+        }
+
+        function copyFact() {
+            const fact = document.getElementById('factDisplay').textContent;
+            if (fact && !fact.includes('Clique')) {
+                navigator.clipboard.writeText(fact).then(() => {
+                    alert('🤓 Fato copiado para a área de transferência!');
+                });
+            }
+            incrementClickCount();
+        }
+
+        // Imagens de Animais - APIs REAIS
+        async function getCatImage() {
+            const animalContainer = document.getElementById('animalContainer');
+            animalContainer.innerHTML = '🔍 Buscando um gatinho fofo...';
+            
+            try {
+                const response = await fetch('https://api.thecatapi.com/v1/images/search');
+                const data = await response.json();
+                
+                animalContainer.innerHTML = `<img src="${data[0].url}" alt="Gato Fofo" class="animal-image">`;
+            } catch (error) {
+                animalContainer.innerHTML = '❌ Erro ao carregar imagem de gato. Tente novamente.';
+            }
+            
+            incrementClickCount();
+        }
+
+        async function getDogImage() {
+            const animalContainer = document.getElementById('animalContainer');
+            animalContainer.innerHTML = '🔍 Buscando um cachorrinho fofo...';
+            
+            try {
+                const response = await fetch('https://api.thedogapi.com/v1/images/search');
+                const data = await response.json();
+                
+                animalContainer.innerHTML = `<img src="${data[0].url}" alt="Cachorro Fofo" class="animal-image">`;
+            } catch (error) {
+                animalContainer.innerHTML = '❌ Erro ao carregar imagem de cachorro. Tente novamente.';
+            }
+            
+            incrementClickCount();
+        }
+
+        async function getFoxImage() {
+            const animalContainer = document.getElementById('animalContainer');
+            animalContainer.innerHTML = '🔍 Buscando uma raposa fofa...';
+            
+            try {
+                const response = await fetch('https://randomfox.ca/floof/');
+                const data = await response.json();
+                
+                animalContainer.innerHTML = `<img src="${data.image}" alt="Raposa Fofa" class="animal-image">`;
+            } catch (error) {
+                animalContainer.innerHTML = '❌ Erro ao carregar imagem de raposa. Tente novamente.';
+            }
+            
+            incrementClickCount();
+        }
+
+        // Gerador de Piadas - API REAL
+        async function getRandomJoke() {
+            const jokeDisplay = document.getElementById('jokeDisplay');
+            jokeDisplay.textContent = '🔍 Procurando uma piada boa...';
+            
+            try {
+                const response = await fetch('https://official-joke-api.appspot.com/random_joke');
+                const data = await response.json();
+                
+                // Tentar traduzir a piada
+                const setup = data.setup;
+                const punchline = data.punchline;
+                const joke = `${setup}\n\n${punchline}`;
+                
+                try {
+                    const translateResponse = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(joke)}&langpair=en|pt`);
+                    const translateData = await translateResponse.json();
+                    
+                    if (translateData.responseData && translateData.responseData.translatedText) {
+                        jokeDisplay.textContent = translateData.responseData.translatedText;
+                    } else {
+                        jokeDisplay.textContent = `${setup}\n\n${punchline}\n\n(em inglês)`;
+                    }
+                } catch (translateError) {
+                    jokeDisplay.textContent = `${setup}\n\n${punchline}\n\n(em inglês)`;
+                }
+                
+                jokesCount++;
+            } catch (error) {
+                // Piadas em português como fallback
+                const piadas = [
+                    "Por que os programadores preferem o escuro?\n\nPorque light mode faz mal para os olhos!",
+                    "Como você chama um programador que não comenta o código?\n\nUm terrorista!",
+                    "Por que o JavaScript foi ao psicólogo?\n\nPorque tinha muitos undefined feelings!",
+                    "Qual é a diferença entre um programador e um usuário?\n\nO programador pensa que sabe o que o usuário quer, o usuário pensa que sabe o que quer!",
+                    "Por que os developers odeiam natureza?\n\nPorque tem muitos bugs!",
+                    "Como você sabe que alguém usa Linux?\n\nEles vão te contar nos primeiros 5 minutos!",
+                    "Por que arrays começam em 0?\n\nPorque os programadores não conseguem contar direito!",
+                    "Qual é o navegador favorito dos aracnídeos?\n\nWeb crawler!",
+                    "Por que o HTML foi ao médico?\n\nPorque estava sem CSS (sem estilo)!",
+                    "Como você chama 8 hobbits?\n\nUm hobbyte!"
+                ];
+                
+                const randomJoke = piadas[Math.floor(Math.random() * piadas.length)];
+                jokeDisplay.textContent = randomJoke;
+                jokesCount++;
+            }
+            
+            incrementClickCount();
+        }
+
+        function copyJoke() {
+            const joke = document.getElementById('jokeDisplay').textContent;
+            if (joke && !joke.includes('Clique')) {
+                navigator.clipboard.writeText(joke).then(() => {
+                    alert('😄 Piada copiada para a área de transferência!');
+                });
+            }
+            incrementClickCount();
+        }
+
+        // Encurtador de URLs - API REAL
+        async function shortenUrl() {
+            const longUrl = document.getElementById('longUrl').value.trim();
+            if (!longUrl) {
+                alert('🔗 Digite uma URL para encurtar!');
+                return;
+            }
+            
+            if (!longUrl.startsWith('http')) {
+                alert('🔗 A URL deve começar com http:// ou https://');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('shortUrlResult');
+            const displayP = document.getElementById('shortUrlDisplay');
+            
+            resultDiv.style.display = 'block';
+            displayP.textContent = 'Encurtando...';
+            
+            try {
+                // Usando TinyURL (gratuito, sem chave)
+                const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+                const shortUrl = await response.text();
+                
+                if (shortUrl.startsWith('http')) {
+                    displayP.innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+                } else {
+                    throw new Error('Erro no encurtamento');
+                }
+            } catch (error) {
+                displayP.textContent = 'Erro ao encurtar URL. Tente novamente.';
+            }
+            
+            incrementClickCount();
+        }
+
+        function copyShortUrl() {
+            const shortUrlDisplay = document.getElementById('shortUrlDisplay');
+            const text = shortUrlDisplay.textContent || shortUrlDisplay.innerText;
+            
+            if (text && text.startsWith('http')) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('🔗 URL encurtada copiada!');
+                });
+            }
+            incrementClickCount();
+        }
+
+        // Consulta CEP - API REAL ViaCEP
+        async function consultarCep() {
+            const cep = document.getElementById('cepInput').value.trim().replace(/\D/g, '');
+            
+            if (cep.length !== 8) {
+                alert('📮 Digite um CEP válido com 8 dígitos!');
+                return;
+            }
+            
+            const cepResult = document.getElementById('cepResult');
+            cepResult.style.display = 'block';
+            cepResult.innerHTML = '<p>🔍 Consultando CEP...</p>';
+            
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+                
+                if (data.erro) {
+                    throw new Error('CEP não encontrado');
+                }
+                
+                cepResult.innerHTML = `
+                    <div class="cep-item">
+                        <span>CEP</span>
+                        <strong>${data.cep}</strong>
+                    </div>
+                    <div class="cep-item">
+                        <span>Logradouro</span>
+                        <strong>${data.logradouro || 'N/A'}</strong>
+                    </div>
+                    <div class="cep-item">
+                        <span>Bairro</span>
+                        <strong>${data.bairro || 'N/A'}</strong>
+                    </div>
+                    <div class="cep-item">
+                        <span>Cidade</span>
+                        <strong>${data.localidade}</strong>
+                    </div>
+                    <div class="cep-item">
+                        <span>Estado</span>
+                        <strong>${data.uf}</strong>
+                    </div>
+                    <div class="cep-item">
+                        <span>DDD</span>
+                        <strong>${data.ddd || 'N/A'}</strong>
+                    </div>
+                `;
+            } catch (error) {
+                cepResult.innerHTML = '<p>❌ CEP não encontrado. Verifique e tente novamente.</p>';
+            }
+            
+            incrementClickCount();
+        }
+
+        function copyCepInfo() {
+            const cepResult = document.getElementById('cepResult');
+            const text = cepResult.innerText;
+            
+            if (text && !text.includes('Consultando')) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📮 Informações do CEP copiadas!');
+                });
+            }
+            incrementClickCount();
+        }
+
+        // Conversor de Moedas - API REAL
+        async function convertCurrency() {
+            const amount = parseFloat(document.getElementById('currencyAmount').value);
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+            
+            if (!amount || amount <= 0) {
+                alert('💰 Digite um valor válido!');
+                return;
+            }
+            
+            const currencyResult = document.getElementById('currencyResult');
+            currencyResult.textContent = 'Convertendo...';
+            
+            try {
+                // Usando API gratuita do ExchangeRate-API
+                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${fromCurrency}`);
+                const data = await response.json();
+                
+                if (data.rates && data.rates[toCurrency]) {
+                    const rate = data.rates[toCurrency];
+                    const convertedAmount = (amount * rate).toFixed(2);
+                    
+                    currencyResult.innerHTML = `
+                        <strong>${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}</strong><br>
+                        <small>Taxa: 1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}</small><br>
+                        <small>💡 Dados em tempo real via ExchangeRate-API</small>
+                    `;
+                } else {
+                    throw new Error('Erro na conversão');
+                }
+            } catch (error) {
+                currencyResult.textContent = 'Erro na conversão. Tente novamente.';
+            }
+            
+            incrementClickCount();
+        }
+
+        function swapCurrencies() {
+            const fromCurrency = document.getElementById('fromCurrency');
+            const toCurrency = document.getElementById('toCurrency');
+            
+            const tempCurrency = fromCurrency.value;
+            fromCurrency.value = toCurrency.value;
+            toCurrency.value = tempCurrency;
+            
+            incrementClickCount();
+        }
+
+        // Clima/Tempo - API REAL wttr.in
+        async function getWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            if (!city) {
+                alert('🌤️ Digite o nome de uma cidade!');
+                return;
+            }
+            
+            const weatherDisplay = document.getElementById('weatherDisplay');
+            weatherDisplay.innerHTML = '<p>🔍 Buscando informações do clima...</p>';
+            
+            try {
+                // Usando API REAL wttr.in (gratuita, sem chave)
+                const response = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+                
+                if (!response.ok) {
+                    throw new Error('Cidade não encontrada');
+                }
+                
+                const data = await response.json();
+                
+                // Extrair dados da API
+                const current = data.current_condition[0];
+                const location = data.nearest_area[0];
+                
+                const temperature = parseInt(current.temp_C);
+                const condition = current.weatherDesc[0].value;
+                const humidity = parseInt(current.humidity);
+                const windSpeed = parseInt(current.windspeedKmph);
+                const pressure = parseInt(current.pressure);
+                const feelTemp = parseInt(current.FeelsLikeC);
+                
+                // Mapear condições para ícones
+                const weatherIcons = {
+                    'Clear': '☀️', 'Sunny': '☀️',
+                    'Partly cloudy': '⛅', 'Partly Cloudy': '⛅',
+                    'Cloudy': '☁️', 'Overcast': '☁️',
+                    'Mist': '🌫️', 'Fog': '🌫️',
+                    'Light rain': '🌦️', 'Moderate rain': '🌧️', 'Heavy rain': '🌧️',
+                    'Thundery outbreaks possible': '⛈️', 'Thunderstorm': '⛈️',
+                    'Light snow': '🌨️', 'Moderate snow': '❄️', 'Heavy snow': '❄️',
+                    'Blizzard': '🌪️'
+                };
+                
+                const icon = weatherIcons[condition] || '🌤️';
+                
+                weatherDisplay.innerHTML = `
+                    <div class="weather-icon">${icon}</div>
+                    <h3>${location.areaName[0].value}, ${location.country[0].value}</h3>
+                    <div class="weather-temp">${temperature}°C</div>
+                    <p>${condition}</p>
+                    <p><small>Sensação térmica: ${feelTemp}°C</small></p>
+                    <div class="weather-info">
+                        <div class="weather-item">
+                            <span>Umidade</span>
+                            <strong>${humidity}%</strong>
+                        </div>
+                        <div class="weather-item">
+                            <span>Vento</span>
+                            <strong>${windSpeed} km/h</strong>
+                        </div>
+                        <div class="weather-item">
+                            <span>Pressão</span>
+                            <strong>${pressure} hPa</strong>
+                        </div>
+                        <div class="weather-item">
+                            <span>Visibilidade</span>
+                            <strong>${current.visibility} km</strong>
+                        </div>
+                    </div>
+                    <p><small>📡 Dados reais via wttr.in</small></p>
+                `;
+            } catch (error) {
+                console.error('Erro na API:', error);
+                
+                // Fallback para Open-Meteo (também gratuita)
+                try {
+                    const geocodeResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=pt&format=json`);
+                    const geocodeData = await geocodeResponse.json();
+                    
+                    if (!geocodeData.results || geocodeData.results.length === 0) {
+                        throw new Error('Cidade não encontrada');
+                    }
+                    
+                    const location = geocodeData.results[0];
+                    const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,surface_pressure&timezone=auto`);
+                    const weatherData = await weatherResponse.json();
+                    
+                    const current = weatherData.current_weather;
+                    const hourly = weatherData.hourly;
+                    const currentIndex = 0; // Hora atual
+                    
+                    const temperature = Math.round(current.temperature);
+                    const windSpeed = Math.round(current.windspeed);
+                    const humidity = hourly.relativehumidity_2m[currentIndex];
+                    const pressure = Math.round(hourly.surface_pressure[currentIndex]);
+                    
+                    // Mapear código WMO para condições
+                    const wmoToCondition = {
+                        0: { condition: 'Céu limpo', icon: '☀️' },
+                        1: { condition: 'Principalmente limpo', icon: '🌤️' },
+                        2: { condition: 'Parcialmente nublado', icon: '⛅' },
+                        3: { condition: 'Nublado', icon: '☁️' },
+                        45: { condition: 'Névoa', icon: '🌫️' },
+                        48: { condition: 'Névoa com geada', icon: '🌫️' },
+                        51: { condition: 'Garoa leve', icon: '🌦️' },
+                        53: { condition: 'Garoa moderada', icon: '🌦️' },
+                        55: { condition: 'Garoa intensa', icon: '🌧️' },
+                        61: { condition: 'Chuva leve', icon: '🌧️' },
+                        63: { condition: 'Chuva moderada', icon: '🌧️' },
+                        65: { condition: 'Chuva intensa', icon: '🌧️' },
+                        95: { condition: 'Tempestade', icon: '⛈️' }
+                    };
+                    
+                    const weatherInfo = wmoToCondition[current.weathercode] || { condition: 'Variável', icon: '🌤️' };
+                    
+                    weatherDisplay.innerHTML = `
+                        <div class="weather-icon">${weatherInfo.icon}</div>
+                        <h3>${location.name}, ${location.country}</h3>
+                        <div class="weather-temp">${temperature}°C</div>
+                        <p>${weatherInfo.condition}</p>
+                        <div class="weather-info">
+                            <div class="weather-item">
+                                <span>Umidade</span>
+                                <strong>${humidity}%</strong>
+                            </div>
+                            <div class="weather-item">
+                                <span>Vento</span>
+                                <strong>${windSpeed} km/h</strong>
+                            </div>
+                            <div class="weather-item">
+                                <span>Pressão</span>
+                                <strong>${pressure} hPa</strong>
+                            </div>
+                        </div>
+                        <p><small>📡 Dados reais via Open-Meteo</small></p>
+                    `;
+                } catch (secondError) {
+                    weatherDisplay.innerHTML = '<p>❌ Erro ao buscar informações do clima. Verifique o nome da cidade e tente novamente.</p>';
+                }
+            }
+            
+            incrementClickCount();
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    document.getElementById('cityInput').value = 'Sua localização';
+                    getWeather();
+                }, () => {
+                    alert('📍 Não foi possível obter sua localização.');
+                });
+            } else {
+                alert('📍 Geolocalização não suportada pelo navegador.');
+            }
+            incrementClickCount();
+        }
+
+        // Estatísticas
+        function incrementClickCount() {
+            clickCount++;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('clickCount').textContent = clickCount;
+            document.getElementById('todoCount').textContent = todoCount;
+            document.getElementById('colorCount').textContent = colorCount;
+            document.getElementById('notesCount').textContent = notesCount;
+            document.getElementById('passwordsCount').textContent = passwordsCount;
+            document.getElementById('memesCount').textContent = memesCount;
+            document.getElementById('translationsCount').textContent = translationsCount;
+            document.getElementById('factsCount').textContent = factsCount;
+            document.getElementById('jokesCount').textContent = jokesCount;
+            
+            const uptime = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('uptime').textContent = uptime + 's';
+        }
+
+        // Eventos de teclado
+        document.getElementById('todoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        document.getElementById('guessInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+
+        // Eventos de teclado adicionais
+        document.getElementById('converterInput').addEventListener('input', convert);
+        document.getElementById('cityInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getWeather();
+            }
+        });
+        document.getElementById('qrText').addEventListener('input', function() {
+            if (this.value.trim()) {
+                setTimeout(generateQR, 500); // Auto-gerar após meio segundo
+            }
+        });
+
+        // Inicialização
+        function init() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            setInterval(updateStats, 1000);
+            generateRandomColor();
+            loadNotes(); // Carregar notas salvas
+            updateConverter(); // Inicializar conversor
+        }
+
+        // Inicializar quando a página carregar
+        window.onload = init;
+    </script>
+</body>
+</html>
